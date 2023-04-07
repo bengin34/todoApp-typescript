@@ -11,10 +11,41 @@ const Home = () => {
   const getTodos = async () => {
     try {
       const { data } = await axios.get<TodoType[]>(url);
-      console.log(data);
       setTodos(data);
     } catch (error) {}
   };
+
+const addTodo:AddFn = async (text) => {
+  const newTodo = { 
+    task: text,
+    isDone: false
+  }
+  try {
+    await axios.post(url, newTodo)
+    getTodos()
+  } catch (error) {
+    
+  }
+}
+
+const toggleTodo:ToggleFn = async (item) => {
+  try {
+    await axios.put(`${url}/${item.id}`, {...item, isDone:!item.isDone})
+    getTodos()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const deleteTodo:DeleteFn = async (id) => {
+  try {
+    await axios.delete(`${url}/${id}`)
+    getTodos()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 
   useEffect(() => {
     getTodos();
@@ -22,8 +53,8 @@ const Home = () => {
 
   return (
     <div className="main">
-      <InputForm />
-      <TodoList todos={todos} />
+      <InputForm addTodo={addTodo} />
+      <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo}/>
     </div>
   );
 };
